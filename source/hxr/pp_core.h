@@ -60,8 +60,8 @@
 	09,08,07,06,05,04,03,02,01,00
 
 #if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
-#	define HXR_OVERLOAD_EXPAND_X(x)  x
-#	define HXR_NARG_(...)     HXR_OVERLOAD_EXPAND_X(HXR__ARG_N(__VA_ARGS__))
+#	define HXR_MSVC_EXPAND_X(x)  x
+#	define HXR_NARG_(...)     HXR_MSVC_EXPAND_X(HXR__ARG_N(__VA_ARGS__))
 #else
 #	define HXR_NARG_(...)     HXR__ARG_N(__VA_ARGS__)
 #endif
@@ -70,8 +70,8 @@
 #define HXR_NARG(...)         HXR_NARG_(__VA_ARGS__,HXR__RSEQ_N())
 #define HXR_NNARG(...)        HXR_NARG_(__VA_ARGS__, HXR__RSEQ_NN())
 
-#define HXR__MACRO_OVERLOAD_(name, n) name##n
-#define HXR__MACRO_OVERLOAD(name, n)  HXR__MACRO_OVERLOAD_(name, n)
+#define HXR_MACRO_OVERLOAD_NX(name, n) name##n
+#define HXR_MACRO_OVERLOAD_N(name, n)  HXR_MACRO_OVERLOAD_NX(name, n)
 
 #if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
 // The MSVC-traditional versions require additional macro expansions,
@@ -81,10 +81,10 @@
 // (not sure if it matters, but may as well).
 #	define HXR_OVERLOAD_EXPAND(...) __VA_ARGS__
 #	define HXR_OVERLOAD_CALL(macro_overload, args)          HXR_OVERLOAD_EXPAND(macro_overload args)
-#	define HXR_MACRO_OVERLOAD0(macro_name, ...)             HXR_OVERLOAD_CALL(HXR__MACRO_OVERLOAD(macro_name, HXR_NARG(__VA_ARGS__)), (__VA_ARGS__))
+#	define HXR_MACRO_OVERLOAD0(macro_name, ...)             HXR_OVERLOAD_CALL(HXR_MACRO_OVERLOAD_N(macro_name, HXR_NARG(__VA_ARGS__)), (__VA_ARGS__))
 #	define HXR_MACRO_OVERLOAD(macro_name, ...)              HXR_MACRO_OVERLOAD0(macro_name, __VA_ARGS__)
-#	define HXR_MACRO_OVERLOAD00(macro_name, ...)            HXR_OVERLOAD_CALL(HXR__MACRO_OVERLOAD(macro_name, HXR_NNARG(__VA_ARGS__)), (__VA_ARGS__))
-#	define HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, ...)  HXR_OVERLOAD_CALL(HXR__MACRO_OVERLOAD(macro_name, HXR_SARG(__VA_ARGS__)), (__VA_ARGS__))
+#	define HXR_MACRO_OVERLOAD00(macro_name, ...)            HXR_OVERLOAD_CALL(HXR_MACRO_OVERLOAD_N(macro_name, HXR_NNARG(__VA_ARGS__)), (__VA_ARGS__))
+#	define HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, ...)  HXR_OVERLOAD_CALL(HXR_MACRO_OVERLOAD_N(macro_name, HXR_SARG(__VA_ARGS__)), (__VA_ARGS__))
 #	define HXR_MACRO_OVERLOAD_SINGLE_ARG(macro_name, ...)   HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, __VA_ARGS__)
 #else
 
@@ -104,7 +104,7 @@
 /// will result in undefined behavior.
 ///
 /// See also: HXR_MACRO_OVERLOAD_SINGLE_ARG, HXR_MACRO_OVERLOAD00
-#define HXR_MACRO_OVERLOAD0(macro_name, ...)  HXR__MACRO_OVERLOAD(macro_name, HXR_NARG(__VA_ARGS__)) (__VA_ARGS__)
+#define HXR_MACRO_OVERLOAD0(macro_name, ...)  HXR_MACRO_OVERLOAD_N(macro_name, HXR_NARG(__VA_ARGS__)) (__VA_ARGS__)
 
 /// ditto
 #define HXR_MACRO_OVERLOAD(macro_name, ...)   HXR_MACRO_OVERLOAD0(macro_name, __VA_ARGS__)
@@ -120,9 +120,9 @@
 /// count under 100, which is unreachable anyways because argument counts
 /// greater than 64 are unsupported).
 ///
-#define HXR_MACRO_OVERLOAD00(macro_name, ...) HXR__MACRO_OVERLOAD(macro_name, HXR_NNARG(__VA_ARGS__)) (__VA_ARGS__)
+#define HXR_MACRO_OVERLOAD00(macro_name, ...) HXR_MACRO_OVERLOAD_N(macro_name, HXR_NNARG(__VA_ARGS__)) (__VA_ARGS__)
 
-#define HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, ...) HXR__MACRO_OVERLOAD(macro_name, HXR_SARG(__VA_ARGS__)) (__VA_ARGS__)
+#define HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, ...) HXR_MACRO_OVERLOAD_N(macro_name, HXR_SARG(__VA_ARGS__)) (__VA_ARGS__)
 
 /// Expands as `macro_name1(...)` if there is a single argument,
 /// otherwise expands as `macro_name0(...)` if there is more than one argument.
@@ -295,9 +295,18 @@
 #define HXR_IMPL_TRIM_CSD_BY_01_7(_N,...) _N,__VA_ARGS__
 #define HXR_IMPL_TRIM_CSD_BY_01_8(_N,...) _N,__VA_ARGS__
 #define HXR_IMPL_TRIM_CSD_BY_01_9(_N,...) _N,__VA_ARGS__
-#define HXR_IMPL_TRIM_CSD_BY_01_D(hxr_impl_trim_csd_by_01_, _D) hxr_impl_trim_csd_by_01_##_D
-#define HXR_IMPL_TRIM_CSD_BY_01_(_D,...) HXR_IMPL_TRIM_CSD_BY_01_D(HXR_IMPL_TRIM_CSD_BY_01_,_D) (_D,__VA_ARGS__)
-#define HXR_IMPL_TRIM_CSD_BY_01(...)     HXR_IMPL_TRIM_CSD_BY_01_(__VA_ARGS__)
+
+#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
+#	define HXR_IMPL_TRIM_CSD_BY_01_SWITCH_X(_D,...) \
+		HXR_MACRO_OVERLOAD_N(HXR_IMPL_TRIM_CSD_BY_01_,_D) (_D,__VA_ARGS__)
+#	define HXR_IMPL_TRIM_CSD_BY_01_SWITCH(args) \
+		HXR_MSVC_EXPAND_X(HXR_IMPL_TRIM_CSD_BY_01_SWITCH_X(args))
+#else
+#	define HXR_IMPL_TRIM_CSD_BY_01_SWITCH(_D,...) \
+		HXR_MACRO_OVERLOAD_N(HXR_IMPL_TRIM_CSD_BY_01_,_D) (_D,__VA_ARGS__)
+#endif
+
+#define HXR_IMPL_TRIM_CSD_BY_01(...)     HXR_IMPL_TRIM_CSD_BY_01_SWITCH(__VA_ARGS__)
 #define HXR_TRIM_CSD_BY_01_LIMIT_00()
 #define HXR_TRIM_CSD_BY_01_LIMIT_1(_0)      _0
 #define HXR_TRIM_CSD_BY_01_LIMIT_0(_D, ...) HXR_IMPL_TRIM_CSD_BY_01(_D, __VA_ARGS__)

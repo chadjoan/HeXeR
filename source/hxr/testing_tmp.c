@@ -206,6 +206,10 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 		HXR_ASSERT_STR_EQ(actual_str, expected_str); \
 	} while(0)
 
+	// Writing the first test this way was helpful for debugging MSVC's
+	// traditional preprocessor's macro divergences.
+	HXR_TEST_TRIM_BY_01("35",3,5);
+
 	HXR_TEST_TRIM_BY_01( "0",0,0);
 	HXR_TEST_TRIM_BY_01("10",1,0);
 	HXR_TEST_TRIM_BY_01("20",2,0);
@@ -229,9 +233,6 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 	HXR_TEST_TRIM_BY_01("99",9,9);
 
 #undef HXR_TEST_TRIM_BY_01
-
-#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
-#else
 #define HXR_TEST_TRIM_BY_02(expect, ...) \
 	do { \
 		actual_str = HXR_STRINGIZE(HXR_GENERATE_TOKEN_FROM_CSD(HXR_TRIM_CSD_BY_02(__VA_ARGS__))); \
@@ -305,7 +306,6 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 
 	printf("  CSD incrementation...");
 
-
 	actual_str = HXR_STRINGIZE((HXR_CONCAT_02(HXR_ADD_DIGITS_1, 0)));
 	expected_str = "(0,1)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
@@ -351,6 +351,8 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 	expected_str = "(0,2,0)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
 
+#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
+#else
 #define HXR_TEST_INCREMENT(expect, ...) \
 	do { \
 		actual_str = HXR_STRINGIZE(HXR_GENERATE_TOKEN_FROM_CSD(HXR_INCR_CSD(__VA_ARGS__))); \
