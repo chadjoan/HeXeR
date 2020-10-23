@@ -18,6 +18,46 @@
 #	define HXR_MSVC_EXPAND_X(x)     x
 #endif
 
+// =================== Exposing basic macro operators ===================
+
+#define HXR_STRINGIZE_1(token) #token
+//#define HXR_STRINGIZE_0(token) HXR_STRINGIZE_1(token)
+#define HXR_STRINGIZE(token)   HXR_STRINGIZE_1(token)
+
+#define HXR_CONCAT_IMPL_16(_F,_E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0) _F##_E##_D##_C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_15(   _E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)     _E##_D##_C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_14(      _D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)         _D##_C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_13(         _C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)             _C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_12(            _B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)                 _B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_11(               _A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)                     _A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_10(                  _9,_8,_7,_6,_5,_4,_3,_2,_1,_0)                         _9##_8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_09(                     _8,_7,_6,_5,_4,_3,_2,_1,_0)                             _8##_7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_08(                        _7,_6,_5,_4,_3,_2,_1,_0)                                 _7##_6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_07(                           _6,_5,_4,_3,_2,_1,_0)                                     _6##_5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_06(                              _5,_4,_3,_2,_1,_0)                                         _5##_4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_05(                                 _4,_3,_2,_1,_0)                                             _4##_3##_2##_1##_0
+#define HXR_CONCAT_IMPL_04(                                    _3,_2,_1,_0)                                                 _3##_2##_1##_0
+#define HXR_CONCAT_IMPL_03(                                       _2,_1,_0)                                                     _2##_1##_0
+#define HXR_CONCAT_IMPL_02(                                          _1,_0)                                                         _1##_0
+#define HXR_CONCAT_IMPL_01(                                             _0)                                                             _0
+
+#define HXR_CONCAT_16(_F,_E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_16(_F,_E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_15(   _E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_15(   _E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_14(      _D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_14(      _D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_13(         _C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_13(         _C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_12(            _B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_12(            _B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_11(               _A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_11(               _A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_10(                  _9,_8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_10(                  _9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_09(                     _8,_7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_09(                     _8,_7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_08(                        _7,_6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_08(                        _7,_6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_07(                           _6,_5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_07(                           _6,_5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_06(                              _5,_4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_06(                              _5,_4,_3,_2,_1,_0)
+#define HXR_CONCAT_05(                                 _4,_3,_2,_1,_0)  HXR_CONCAT_IMPL_05(                                 _4,_3,_2,_1,_0)
+#define HXR_CONCAT_04(                                    _3,_2,_1,_0)  HXR_CONCAT_IMPL_04(                                    _3,_2,_1,_0)
+#define HXR_CONCAT_03(                                       _2,_1,_0)  HXR_CONCAT_IMPL_03(                                       _2,_1,_0)
+#define HXR_CONCAT_02(                                          _1,_0)  HXR_CONCAT_IMPL_02(                                          _1,_0)
+#define HXR_CONCAT_01(                                             _0)  HXR_CONCAT_IMPL_01(                                             _0)
+
 // ========================== Macro overloading ==========================
 // Variadic argument counting and extraction taken from these posts:
 // https://groups.google.com/g/comp.std.c/c/d-6Mj5Lko_s
@@ -75,8 +115,25 @@
 #define HXR_NARG(...)         HXR_NARG_(__VA_ARGS__,HXR__RSEQ_N())
 #define HXR_NNARG(...)        HXR_NARG_(__VA_ARGS__, HXR__RSEQ_NN())
 
-#define HXR_MACRO_OVERLOAD_NX(name, n) name##n
-#define HXR_MACRO_OVERLOAD_N(name, n)  HXR_MACRO_OVERLOAD_NX(name, n)
+
+// HXR_OVERLOAD_CONCAT: For some reason, we can't just use HXR_CONCAT_02 for this.
+//
+// Maybe the preprocessor doesn't like expanding things like
+//    HXR_CONCAT_02(HXR_CONCAT_IMPL_, NARGS(__VA_ARGS__)) (__VA_ARGS__)
+//    -> HXR_CONCAT_IMPL_02(HXR_CONCAT_IMPL_,NN) (__VA_ARGS__)
+// ??
+//
+// Also,
+//   #define HXR_OVERLOAD_CONCAT(name, n)   HXR_CONCAT_IMPL_02(name, n)
+// doesn't work either.
+// From GCC:
+// "source/hxr/pp_core.h:194:46: warning: implicit declaration of function ‘HXR_CONCAT_IMPL_02’"
+// (and many other errors)
+//
+// Fine fine, we'll make ANOTHER concatenator pair.
+//
+#define HXR_OVERLOAD_CONCAT_X(name, n) name##n
+#define HXR_OVERLOAD_CONCAT(name, n)   HXR_OVERLOAD_CONCAT_X(name, n)
 
 #if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
 // The MSVC-traditional versions require additional macro expansions,
@@ -85,11 +142,11 @@
 // processor can execute faster or define fewer symbols
 // (not sure if it matters, but may as well).
 #	define HXR_OVERLOAD_CALL(macro_overload, args)          HXR_MSVC_EXPAND_VA(macro_overload args)
-#	define HXR_MACRO_OVERLOAD0(macro_name, ...)             HXR_OVERLOAD_CALL(HXR_MACRO_OVERLOAD_N(macro_name, HXR_NARG(__VA_ARGS__)), (__VA_ARGS__))
-#	define HXR_MACRO_OVERLOAD(macro_name, ...)              HXR_MACRO_OVERLOAD0(macro_name, __VA_ARGS__)
-#	define HXR_MACRO_OVERLOAD00(macro_name, ...)            HXR_OVERLOAD_CALL(HXR_MACRO_OVERLOAD_N(macro_name, HXR_NNARG(__VA_ARGS__)), (__VA_ARGS__))
-#	define HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, ...)  HXR_OVERLOAD_CALL(HXR_MACRO_OVERLOAD_N(macro_name, HXR_SARG(__VA_ARGS__)), (__VA_ARGS__))
-#	define HXR_MACRO_OVERLOAD_SINGLE_ARG(macro_name, ...)   HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, __VA_ARGS__)
+#	define HXR_MACRO_OVERLOAD_NN(macro_name, ...)           HXR_OVERLOAD_CALL(HXR_OVERLOAD_CONCAT(macro_name, HXR_NNARG(__VA_ARGS__)), (__VA_ARGS__))
+#	define HXR_MACRO_OVERLOAD_N(macro_name, ...)            HXR_OVERLOAD_CALL(HXR_OVERLOAD_CONCAT(macro_name, HXR_NARG(__VA_ARGS__)), (__VA_ARGS__))
+#	define HXR_MACRO_OVERLOAD(macro_name, ...)              HXR_MACRO_OVERLOAD_N(macro_name, __VA_ARGS__)
+#	define HXR_MACRO_OVERLOAD_SINGLE_ARG_X(macro_name, ...) HXR_OVERLOAD_CALL(HXR_OVERLOAD_CONCAT(macro_name, HXR_SARG(__VA_ARGS__)), (__VA_ARGS__))
+#	define HXR_MACRO_OVERLOAD_SINGLE_ARG(macro_name, ...)   HXR_MACRO_OVERLOAD_SINGLE_ARG_X(macro_name, __VA_ARGS__)
 #else
 
 /// Expands as `macro_nameN(...)` where N is the number of variadic macro
@@ -107,11 +164,11 @@
 /// As many as 64 arguments may be passed using this macro. Passing any more
 /// will result in undefined behavior.
 ///
-/// See also: HXR_MACRO_OVERLOAD_SINGLE_ARG, HXR_MACRO_OVERLOAD00
-#define HXR_MACRO_OVERLOAD0(macro_name, ...)  HXR_MACRO_OVERLOAD_N(macro_name, HXR_NARG(__VA_ARGS__)) (__VA_ARGS__)
+/// See also: HXR_MACRO_OVERLOAD_SINGLE_ARG, HXR_MACRO_OVERLOAD_NN
+#define HXR_MACRO_OVERLOAD_N(macro_name, ...)  HXR_OVERLOAD_CONCAT(macro_name, HXR_NARG(__VA_ARGS__)) (__VA_ARGS__)
 
 /// ditto
-#define HXR_MACRO_OVERLOAD(macro_name, ...)   HXR_MACRO_OVERLOAD0(macro_name, __VA_ARGS__)
+#define HXR_MACRO_OVERLOAD(macro_name, ...)   HXR_MACRO_OVERLOAD_N(macro_name, __VA_ARGS__)
 
 /// Expands as `macro_nameNN(...)` where NN is the number of variadic macro
 /// arguments that were passed (that is, the number of arguments passed to this
@@ -124,9 +181,9 @@
 /// count under 100, which is unreachable anyways because argument counts
 /// greater than 64 are unsupported).
 ///
-#define HXR_MACRO_OVERLOAD00(macro_name, ...) HXR_MACRO_OVERLOAD_N(macro_name, HXR_NNARG(__VA_ARGS__)) (__VA_ARGS__)
+#define HXR_MACRO_OVERLOAD_NN(macro_name, ...) HXR_OVERLOAD_CONCAT(macro_name, HXR_NNARG(__VA_ARGS__)) (__VA_ARGS__)
 
-#define HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, ...) HXR_MACRO_OVERLOAD_N(macro_name, HXR_SARG(__VA_ARGS__)) (__VA_ARGS__)
+#define HXR_MACRO_OVERLOAD_SINGLE_ARG_X(macro_name, ...) HXR_OVERLOAD_CONCAT(macro_name, HXR_SARG(__VA_ARGS__)) (__VA_ARGS__)
 
 /// Expands as `macro_name1(...)` if there is a single argument,
 /// otherwise expands as `macro_name0(...)` if there is more than one argument.
@@ -139,38 +196,17 @@
 /// As many as 64 arguments may be passed using this macro. Passing any more
 /// will result in undefined behavior.
 ///
-#define HXR_MACRO_OVERLOAD_SINGLE_ARG(macro_name, ...) HXR_MACRO_OVERLOAD_SINGLE_ARG_(macro_name, __VA_ARGS__)
+#define HXR_MACRO_OVERLOAD_SINGLE_ARG(macro_name, ...) HXR_MACRO_OVERLOAD_SINGLE_ARG_X(macro_name, __VA_ARGS__)
 
 #endif /* defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL */
 
-// =================== Exposing basic macro operators ===================
-
-#define HXR_STRINGIZE_1(token) #token
-//#define HXR_STRINGIZE_0(token) HXR_STRINGIZE_1(token)
-#define HXR_STRINGIZE(token)   HXR_STRINGIZE_1(token)
-
-#define HXR_CONCAT_16(_F,_E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0) _F##_E##_D##_C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_15(   _E,_D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)     _E##_D##_C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_14(      _D,_C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)         _D##_C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_13(         _C,_B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)             _C##_B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_12(            _B,_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)                 _B##_A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_11(               _A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)                     _A##_9##_8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_10(                  _9,_8,_7,_6,_5,_4,_3,_2,_1,_0)                         _9##_8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_09(                     _8,_7,_6,_5,_4,_3,_2,_1,_0)                             _8##_7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_08(                        _7,_6,_5,_4,_3,_2,_1,_0)                                 _7##_6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_07(                           _6,_5,_4,_3,_2,_1,_0)                                     _6##_5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_06(                              _5,_4,_3,_2,_1,_0)                                         _5##_4##_3##_2##_1##_0
-#define HXR_CONCAT_05(                                 _4,_3,_2,_1,_0)                                             _4##_3##_2##_1##_0
-#define HXR_CONCAT_04(                                    _3,_2,_1,_0)                                                 _3##_2##_1##_0
-#define HXR_CONCAT_03(                                       _2,_1,_0)                                                     _2##_1##_0
-#define HXR_CONCAT_02(                                          _1,_0)                                                         _1##_0
-#define HXR_CONCAT_01(                                             _0)                                                             _0
+// =============== Exposing basic macro operators (again) ===============
+// ------- This is where their variadic overload dispatchers go. --------
+// ......................................................................
 
 /// Concatenates up to 16 arguments together using the preprocessor's token
 /// concatenation operation (##).
-#define HXR_CONCAT(...) HXR_MACRO_OVERLOAD00(HXR_CONCAT_, __VA_ARGS__)
-//#define HXR_CONCAT_NN(...) HXR_MACRO_OVERLOAD00(HXR_CONCAT_, __VA_ARGS__)
-//#define HXR_CONCAT(...) HXR_CONCAT_NN(__VA_ARGS__)
+#define HXR_CONCAT(...) HXR_MACRO_OVERLOAD_NN(HXR_CONCAT_IMPL_, __VA_ARGS__)
 
 // ============================= Arithmatic =============================
 // ----------------------- Comma-Separated Digits -----------------------
@@ -297,7 +333,7 @@
 #define HXR_CSD_DIGITS_FROM_98 9,8
 #define HXR_CSD_DIGITS_FROM_99 9,9
 
-#define HXR_CSD_DIGITS_FROM_NN(nn) HXR_MACRO_OVERLOAD00(HXR_CSD_DIGITS_FROM_, nn)
+#define HXR_CSD_DIGITS_FROM_NN(nn) HXR_MACRO_OVERLOAD_NN(HXR_CSD_DIGITS_FROM_, nn)
 */
 
 #define HXR_ADD_CSD_DIGITS_00 0,0
@@ -424,12 +460,12 @@
 
 #if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
 #	define HXR_IMPL_TRIM_CSD_BY_01_SWITCH_X(_D,...) \
-		HXR_MACRO_OVERLOAD_N(HXR_IMPL_TRIM_CSD_BY_01_,_D) (_D,__VA_ARGS__)
+		HXR_CONCAT_02(HXR_IMPL_TRIM_CSD_BY_01_,_D) (_D,__VA_ARGS__)
 #	define HXR_IMPL_TRIM_CSD_BY_01_SWITCH(args) \
 		HXR_MSVC_EXPAND_X(HXR_IMPL_TRIM_CSD_BY_01_SWITCH_X(args))
 #else
 #	define HXR_IMPL_TRIM_CSD_BY_01_SWITCH(_D,...) \
-		HXR_MACRO_OVERLOAD_N(HXR_IMPL_TRIM_CSD_BY_01_,_D) (_D,__VA_ARGS__)
+		HXR_CONCAT_02(HXR_IMPL_TRIM_CSD_BY_01_,_D) (_D,__VA_ARGS__)
 #endif
 
 #define HXR_IMPL_TRIM_CSD_BY_01(...)     HXR_IMPL_TRIM_CSD_BY_01_SWITCH(__VA_ARGS__)
@@ -469,7 +505,7 @@
 #define HXR_TRIM_CSD09(   _8,_7,_6,_5,_4,_3,_2,_1,_0)   HXR_IMPL_TRIM_CSD_BY_08(   _8,_7,_6,_5,_4,_3,_2,_1,_0)
 #define HXR_TRIM_CSD10(_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)   HXR_IMPL_TRIM_CSD_BY_09(_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)
 
-#define HXR_TRIM_CSD(...) HXR_MACRO_OVERLOAD00(HXR_TRIM_CSD, __VA_ARGS__)
+#define HXR_TRIM_CSD(...) HXR_MACRO_OVERLOAD_NN(HXR_TRIM_CSD, __VA_ARGS__)
 
 #define HXR_IMPL_CAST_TO_CSD10_FROM_CSD11(_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0) _9,_8,_7,_6,_5,_4,_3,_2,_1,_0
 #define HXR_IMPL_CAST_TO_CSD09_FROM_CSD11(_A,_9,_8,_7,_6,_5,_4,_3,_2,_1,_0)    _8,_7,_6,_5,_4,_3,_2,_1,_0
@@ -867,16 +903,16 @@
 /* #else !( defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL ) */
 #endif
 
-#define HXR_CAST_TO_CSD10(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD10_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD09(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD09_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD08(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD08_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD07(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD07_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD06(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD06_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD05(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD05_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD04(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD04_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD03(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD03_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD02(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD02_FROM_CSD, __VA_ARGS__)
-#define HXR_CAST_TO_CSD01(...) HXR_MACRO_OVERLOAD00(HXR_CAST_TO_CSD01_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD10(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD10_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD09(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD09_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD08(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD08_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD07(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD07_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD06(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD06_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD05(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD05_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD04(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD04_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD03(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD03_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD02(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD02_FROM_CSD, __VA_ARGS__)
+#define HXR_CAST_TO_CSD01(...) HXR_MACRO_OVERLOAD_NN(HXR_CAST_TO_CSD01_FROM_CSD, __VA_ARGS__)
 
 #define HXR_INCR_AND_CARRY_CSD02_1(_1, carry, _0)                          HXR_ADD_CSD_DIGITS_ ## carry ## _1,_0
 #define HXR_INCR_AND_CARRY_CSD03_1(_2, carry, _1,_0)                       HXR_ADD_CSD_DIGITS_ ## carry ## _2,_1,_0
@@ -910,7 +946,7 @@
 #	define HXR_INCR_AND_CARRY_CSD10_0(_9, tuple)                      HXR_INCR_AND_CARRY_CSD10_1(_9, tuple)
 #endif
 
-#define HXR_INCR_AND_CARRY_CSD01(_0)                                  HXR_CONCAT_02(HXR_ADD_CSD_DIGITS_1, _0)
+#define HXR_INCR_AND_CARRY_CSD01(_0)                                  HXR_CONCAT_IMPL_02(HXR_ADD_CSD_DIGITS_1, _0)
 #define HXR_INCR_AND_CARRY_CSD02(_1,_0)                               HXR_INCR_AND_CARRY_CSD02_0(_1, HXR_ADD_CSD_DIGITS_1 ## _0)
 #define HXR_INCR_AND_CARRY_CSD03(_2,_1,_0)                            HXR_INCR_AND_CARRY_CSD03_0(_2, HXR_INCR_AND_CARRY_CSD02(_1,_0))
 #define HXR_INCR_AND_CARRY_CSD04(_3,_2,_1,_0)                         HXR_INCR_AND_CARRY_CSD04_0(_3, HXR_INCR_AND_CARRY_CSD03(_2,_1,_0))
@@ -972,7 +1008,7 @@
 ///   HXR_STRINGIZE((HXR_INCR_AND_CARRY_CSD(9,9))) == "(1,0,0)"
 ///   HXR_STRINGIZE((HXR_INCR_AND_CARRY_CSD(9,9,9,9,9,9,9,9,9,9))) == "(1,0,0,0,0,0,0,0,0,0,0)"
 ///
-#define HXR_INCR_AND_CARRY_CSD(...)  HXR_MACRO_OVERLOAD00(HXR_INCR_AND_CARRY_CSD, __VA_ARGS__)
+#define HXR_INCR_AND_CARRY_CSD(...)  HXR_MACRO_OVERLOAD_NN(HXR_INCR_AND_CARRY_CSD, __VA_ARGS__)
 
 /// Expands to the number represented by the argument list, in Comma-Separated-Digits (CSD) form,
 /// plus one, or expands to a CSD of equivalent width that represents 0 if the
@@ -985,7 +1021,7 @@
 ///   HXR_STRINGIZE((HXR_INCR_CSD(1,5))) == "(1,6)"
 ///   HXR_STRINGIZE((HXR_INCR_CSD(9,9))) == "(0,0)"
 ///
-#define HXR_INCR_AND_WRAP_CSD(...)   HXR_MACRO_OVERLOAD00(HXR_INCR_AND_WRAP_CSD, __VA_ARGS__)
+#define HXR_INCR_AND_WRAP_CSD(...)   HXR_MACRO_OVERLOAD_NN(HXR_INCR_AND_WRAP_CSD, __VA_ARGS__)
 
 /// Expands to the number represented by the argument list, in Comma-Separated-Digits (CSD) form,
 /// plus one.
@@ -1003,7 +1039,7 @@
 ///   HXR_STRINGIZE((HXR_INCR_CSD(9,9))) == "(1,0,0)"
 ///   HXR_STRINGIZE((HXR_INCR_CSD(9,9,9,9,9,9,9,9,9,9))) == "(0,0,0,0,0,0,0,0,0,0)"
 ///
-#define HXR_INCR_CSD(...)            HXR_MACRO_OVERLOAD00(HXR_INCR_CSD, __VA_ARGS__)
+#define HXR_INCR_CSD(...)            HXR_MACRO_OVERLOAD_NN(HXR_INCR_CSD, __VA_ARGS__)
 
 #define HXR_ADD
 
@@ -1117,16 +1153,16 @@
 #define HXR_GET_DIGIT01_CSD01(_0)  0
 #define HXR_GET_DIGIT00_CSD01(_0) _0
 
-#define HXR_CSD_GET_DIGIT09(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT09_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT08(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT08_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT07(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT07_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT06(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT06_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT05(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT05_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT04(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT04_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT03(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT03_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT02(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT02_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT01(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT01_CSD, __VA_ARGS__)
-#define HXR_CSD_GET_DIGIT00(...) HXR_MACRO_OVERLOAD00(HXR_GET_DIGIT00_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT09(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT09_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT08(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT08_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT07(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT07_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT06(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT06_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT05(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT05_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT04(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT04_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT03(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT03_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT02(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT02_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT01(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT01_CSD, __VA_ARGS__)
+#define HXR_CSD_GET_DIGIT00(...) HXR_MACRO_OVERLOAD_NN(HXR_GET_DIGIT00_CSD, __VA_ARGS__)
 
 #define HXR_MAKE_CSD10_10(_9,_8,_7,_6,_5,_4,_3,_2,_1,_0) _9,_8,_7,_6,_5,_4,_3,_2,_1,_0
 #define HXR_MAKE_CSD10_09(   _8,_7,_6,_5,_4,_3,_2,_1,_0)  0,_8,_7,_6,_5,_4,_3,_2,_1,_0
@@ -1139,7 +1175,7 @@
 #define HXR_MAKE_CSD10_02(                        _1,_0)  0, 0, 0, 0, 0, 0, 0, 0,_1,_0
 #define HXR_MAKE_CSD10_01(                           _0)  0, 0, 0, 0, 0, 0, 0, 0, 0,_0
 
-#define HXR_MAKE_CSD10(...) HXR_MACRO_OVERLOAD00(HXR_MAKE_CSD10_, __VA_ARGS__)
+#define HXR_MAKE_CSD10(...) HXR_MACRO_OVERLOAD_NN(HXR_MAKE_CSD10_, __VA_ARGS__)
 
 #define HXR_MAKE_CSD09(...) HXR_CAST_TO_CSD09_FROM_CSD10(HXR_MAKE_CSD10(__VA_ARGS__))
 #define HXR_MAKE_CSD08(...) HXR_CAST_TO_CSD08_FROM_CSD10(HXR_MAKE_CSD10(__VA_ARGS__))
@@ -1162,7 +1198,7 @@
 #define HXR_GENERATE_TOKEN_FROM_CSD02(                        _1,_0)                                                 _1 ## _0
 #define HXR_GENERATE_TOKEN_FROM_CSD01(                           _0)                                                       _0
 
-#define HXR_GENERATE_TOKEN_FROM_CSD(...) HXR_MACRO_OVERLOAD00(HXR_GENERATE_TOKEN_FROM_CSD, __VA_ARGS__)
+#define HXR_GENERATE_TOKEN_FROM_CSD(...) HXR_MACRO_OVERLOAD_NN(HXR_GENERATE_TOKEN_FROM_CSD, __VA_ARGS__)
 #define HXR_GENERATE_INTEGER_FROM_CSD(...) (HXR_GENERATE_TOKEN_FROM_CSD(HXR_TRIM_CSD(__VA_ARGS__)))
 
 #endif
