@@ -351,8 +351,6 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 	expected_str = "(0,2,0)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
 
-#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
-#else
 #define HXR_TEST_INCREMENT(expect, ...) \
 	do { \
 		actual_str = HXR_STRINGIZE(HXR_GENERATE_TOKEN_FROM_CSD(HXR_INCR_CSD(__VA_ARGS__))); \
@@ -425,7 +423,7 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 	expected_str = "(2)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
 #undef HXR_TEST_INCREMENT
-#endif
+
 	printf(" passed.\n");
 	return 0;
 }
