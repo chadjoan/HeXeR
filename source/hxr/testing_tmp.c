@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 #define HXR_LINKAGE_PREFIX hxr_
 
@@ -58,7 +59,8 @@ static size_t HXR(calculate_text_alignment_)(const char *a, const char *b, size_
 	return align_len;
 }
 
-static int HXR(assert_str_eq_)(
+static int HXR(assert_eq_)(
+	const char *wut,
 	const char *file, const char *func, size_t line,
 	const char *a_expr,  const char *b_expr,
 	const char *a_value, const char *b_value)
@@ -73,7 +75,7 @@ static int HXR(assert_str_eq_)(
 			(int)HXR(calculate_text_alignment_)(
 				a_expr, b_expr, NULL, NULL);
 
-		printf("%s, %d: Strings were not equal when they should be.\n", file, iline);
+		printf("%s, %d: %s were not equal when they should be.\n", file, iline, wut);
 		printf("%s, %d:   %*s:  \"%s\"\n", file, iline, align_len, a_expr, a_value);
 		printf("%s, %d:   %*s:  \"%s\"\n", file, iline, align_len, b_expr, b_value);
 	}
@@ -84,7 +86,7 @@ static int HXR(assert_str_eq_)(
 			HXR(calculate_text_alignment_)(
 				a_value, b_value, &a_padding, &b_padding);
 
-		printf("%s, %d: Strings were not equal when they should be.\n", file, iline);
+		printf("%s, %d: %s were not equal when they should be.\n", file, iline, wut);
 
 		// There are two paths for printing the sides of the assertion:
 		//
@@ -118,6 +120,15 @@ static int HXR(assert_str_eq_)(
 	return 0;
 }
 
+
+static int HXR(assert_str_eq_)(
+	const char *file, const char *func, size_t line,
+	const char *a_expr,  const char *b_expr,
+	const char *a_value, const char *b_value)
+{
+	return HXR(assert_eq_)("Strings", file, func, line, a_expr, b_expr, a_value, b_value);
+}
+
 static int HXR(test_assert_str_eq_)(
 	const char *file, const char *func, size_t line,
 	const char *a_expr,  const char *b_expr,
@@ -128,6 +139,73 @@ static int HXR(test_assert_str_eq_)(
 
 	printf("\n");
 	return HXR(assert_str_eq_)(file, func, line, a_expr, b_expr, a_value, b_value);
+}
+
+static char *HXR(itoa_)(int64_t v, char *buf, size_t sz)
+{
+	if ( v == 0 )
+		return "0";
+
+	int64_t vabs = (v < 0) ? -v : v;
+
+	// Construct the string-representation least-significant-digit-first
+	// on the right-side of the the buffer.
+	char *digit_pos = buf + sz;
+	digit_pos--;
+	*digit_pos = '\0'; // Null-terminate the buffer first, though.
+
+	while ( vabs != 0 )
+	{
+		digit_pos--;
+		*digit_pos = '0' + (vabs % 10);
+		vabs /= 10;
+	}
+
+	// Add sign, if necessary.
+	if ( v < 0 ) {
+		digit_pos--;
+		*digit_pos = '-';
+	}
+
+	// At this point we /could/ try to shift everything left-wards so that
+	// the printed string occupies the left-side of the buffer.
+	// But this function just needs to generate strings that can be placed
+	// into format-strings by functions that don't know where the strings
+	// came from. We're not appending to another string or anything like that,
+	// so it should be safe to ignore any extra steps at this point.
+	return digit_pos;
+}
+
+static int HXR(assert_int_eq_)(
+	const char *file, const char *func, size_t line,
+	const char *a_expr,  const char *b_expr,
+	int64_t    a_value,  int64_t    b_value)
+{
+	if ( a_value == b_value )
+		return 1;
+
+	char a_strbuf[24];
+	char b_strbuf[24];
+	char *a_valstr = HXR(itoa_)(a_value, a_strbuf, sizeof(a_strbuf));
+	char *b_valstr = HXR(itoa_)(b_value, b_strbuf, sizeof(b_strbuf));
+
+	return HXR(assert_eq_)(
+		"Integers",
+		file, func, line,
+		a_expr,   b_expr,
+		a_valstr, b_valstr);
+}
+
+static int HXR(test_assert_int_eq_)(
+	const char *file, const char *func, size_t line,
+	const char *a_expr,  const char *b_expr,
+	int64_t    a_value,  int64_t    b_value)
+{
+	if ( a_value == b_value )
+		return 1;
+
+	printf("\n");
+	return HXR(assert_int_eq_)(file, func, line, a_expr, b_expr, a_value, b_value);
 }
 
 /*
@@ -144,6 +222,12 @@ int main(int argc, const char *argv[])
 	do { \
 		if ( !HXR(test_assert_str_eq_)(__FILE__, __func__, __LINE__, #a, #b, a, b) ) \
 			assert(0 == strcmp(a, b)); \
+	} while(0)
+
+#define HXR_TEST_INT_EQ(a,b) \
+	do { \
+		if ( !HXR(assert_int_eq_)(__FILE__, __func__, __LINE__, "expected", "actual", a, b) ) \
+			assert(a == b); \
 	} while(0)
 
 	printf("Testing basic macro operations.\n");
@@ -195,6 +279,84 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 	if ( exec_count < 2 )
 		goto label_0000000000;
 	assert(exec_count == 2);
+
+	HXR_TEST_INT_EQ(9, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(9)));
+	HXR_TEST_INT_EQ(8, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(8)));
+	HXR_TEST_INT_EQ(7, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(7)));
+	HXR_TEST_INT_EQ(6, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(6)));
+	HXR_TEST_INT_EQ(5, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(5)));
+	HXR_TEST_INT_EQ(4, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(4)));
+	HXR_TEST_INT_EQ(3, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(3)));
+	HXR_TEST_INT_EQ(2, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(2)));
+	HXR_TEST_INT_EQ(1, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(1)));
+	HXR_TEST_INT_EQ(0, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(0)));
+
+	HXR_TEST_INT_EQ(9, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(9)));
+	HXR_TEST_INT_EQ(8, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(8)));
+	HXR_TEST_INT_EQ(7, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(7)));
+	HXR_TEST_INT_EQ(6, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(6)));
+	HXR_TEST_INT_EQ(5, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(5)));
+	HXR_TEST_INT_EQ(4, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(4)));
+	HXR_TEST_INT_EQ(3, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(3)));
+	HXR_TEST_INT_EQ(2, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(2)));
+	HXR_TEST_INT_EQ(1, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(1)));
+	HXR_TEST_INT_EQ(0, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(0)));
+
+	HXR_TEST_INT_EQ(9, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(9)));
+	HXR_TEST_INT_EQ(8, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(8)));
+	HXR_TEST_INT_EQ(7, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(7)));
+	HXR_TEST_INT_EQ(6, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(6)));
+	HXR_TEST_INT_EQ(5, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(5)));
+	HXR_TEST_INT_EQ(4, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(4)));
+	HXR_TEST_INT_EQ(3, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(3)));
+	HXR_TEST_INT_EQ(2, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(2)));
+	HXR_TEST_INT_EQ(1, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(1)));
+	HXR_TEST_INT_EQ(0, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(0)));
+
+	HXR_TEST_INT_EQ(99, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(9,9)));
+	HXR_TEST_INT_EQ(88, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(8,8)));
+	HXR_TEST_INT_EQ(77, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(7,7)));
+	HXR_TEST_INT_EQ(66, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(6,6)));
+	HXR_TEST_INT_EQ(55, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(5,5)));
+	HXR_TEST_INT_EQ(44, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(4,4)));
+	HXR_TEST_INT_EQ(33, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(3,3)));
+	HXR_TEST_INT_EQ(22, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(2,2)));
+	HXR_TEST_INT_EQ(11, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(1,1)));
+	HXR_TEST_INT_EQ( 0, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD10(0,0)));
+
+	HXR_TEST_INT_EQ(99, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(9,9)));
+	HXR_TEST_INT_EQ(88, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(8,8)));
+	HXR_TEST_INT_EQ(77, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(7,7)));
+	HXR_TEST_INT_EQ(66, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(6,6)));
+	HXR_TEST_INT_EQ(55, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(5,5)));
+	HXR_TEST_INT_EQ(44, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(4,4)));
+	HXR_TEST_INT_EQ(33, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(3,3)));
+	HXR_TEST_INT_EQ(22, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(2,2)));
+	HXR_TEST_INT_EQ(11, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(1,1)));
+	HXR_TEST_INT_EQ( 0, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD05(0,0)));
+
+	HXR_TEST_INT_EQ(99, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(9,9)));
+	HXR_TEST_INT_EQ(88, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(8,8)));
+	HXR_TEST_INT_EQ(77, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(7,7)));
+	HXR_TEST_INT_EQ(66, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(6,6)));
+	HXR_TEST_INT_EQ(55, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(5,5)));
+	HXR_TEST_INT_EQ(44, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(4,4)));
+	HXR_TEST_INT_EQ(33, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(3,3)));
+	HXR_TEST_INT_EQ(22, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(2,2)));
+	HXR_TEST_INT_EQ(11, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(1,1)));
+	HXR_TEST_INT_EQ( 0, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD02(0,0)));
+
+	HXR_TEST_INT_EQ( 9, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(9,9)));
+	HXR_TEST_INT_EQ( 8, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(8,8)));
+	HXR_TEST_INT_EQ( 7, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(7,7)));
+	HXR_TEST_INT_EQ( 6, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(6,6)));
+	HXR_TEST_INT_EQ( 5, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(5,5)));
+	HXR_TEST_INT_EQ( 4, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(4,4)));
+	HXR_TEST_INT_EQ( 3, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(3,3)));
+	HXR_TEST_INT_EQ( 2, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(2,2)));
+	HXR_TEST_INT_EQ( 1, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(1,1)));
+	HXR_TEST_INT_EQ( 0, HXR_GENERATE_INTEGER_FROM_CSD(HXR_MAKE_CSD01(0,0)));
+	
 	printf(" passed.\n");
 
 	printf("  CSD trimming...");
@@ -306,13 +468,13 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 
 	printf("  CSD incrementation...");
 
-	actual_str = HXR_STRINGIZE((HXR_CONCAT_02(HXR_ADD_DIGITS_1, 0)));
+	actual_str = HXR_STRINGIZE((HXR_CONCAT_02(HXR_ADD_CSD_DIGITS_1, 0)));
 	expected_str = "(0,1)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
-	actual_str = HXR_STRINGIZE((HXR_CONCAT_02(HXR_ADD_DIGITS_1, 1)));
+	actual_str = HXR_STRINGIZE((HXR_CONCAT_02(HXR_ADD_CSD_DIGITS_1, 1)));
 	expected_str = "(0,2)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
-	actual_str = HXR_STRINGIZE((HXR_CONCAT_02(HXR_ADD_DIGITS_1, 9)));
+	actual_str = HXR_STRINGIZE((HXR_CONCAT_02(HXR_ADD_CSD_DIGITS_1, 9)));
 	expected_str = "(1,0)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
 	
@@ -337,7 +499,7 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 	expected_str = "(1,0)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
 
-	actual_str = HXR_STRINGIZE((HXR_CONCAT_03(HXR_ADD_DIGITS_, 0, 1),1));
+	actual_str = HXR_STRINGIZE((HXR_CONCAT_03(HXR_ADD_CSD_DIGITS_, 0, 1),1));
 	expected_str = "(0,1,1)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
 	
@@ -423,6 +585,50 @@ HXR_CONCAT(label_,HXR_GENERATE_TOKEN_FROM_CSD(HXR_MAKE_CSD10(0))):;
 	expected_str = "(2)";
 	HXR_ASSERT_STR_EQ(actual_str, expected_str);
 #undef HXR_TEST_INCREMENT
+
+	printf(" passed.\n"); // Increment testing.
+
+
+	printf("  CSD digit retrieval...");
+#define HXR_TEST_CSD 6,5,5,3,5
+	HXR_TEST_INT_EQ(6, HXR_CSD_GET_DIGIT04(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(5, HXR_CSD_GET_DIGIT03(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(5, HXR_CSD_GET_DIGIT02(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(3, HXR_CSD_GET_DIGIT01(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(5, HXR_CSD_GET_DIGIT00(HXR_TEST_CSD));
+
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT09(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT08(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT07(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT06(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT05(HXR_TEST_CSD));
+#undef HXR_TEST_CSD
+
+#define HXR_TEST_CSD 9,8,7,6,5,4,3,2,1,0
+	HXR_TEST_INT_EQ(9, HXR_CSD_GET_DIGIT09(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(8, HXR_CSD_GET_DIGIT08(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(7, HXR_CSD_GET_DIGIT07(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(6, HXR_CSD_GET_DIGIT06(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(5, HXR_CSD_GET_DIGIT05(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(4, HXR_CSD_GET_DIGIT04(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(3, HXR_CSD_GET_DIGIT03(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(2, HXR_CSD_GET_DIGIT02(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(1, HXR_CSD_GET_DIGIT01(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT00(HXR_TEST_CSD));
+#undef HXR_TEST_CSD
+
+#define HXR_TEST_CSD HXR_MAKE_CSD05(3)
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT09(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT08(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT07(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT06(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT05(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT04(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT03(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT02(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(0, HXR_CSD_GET_DIGIT01(HXR_TEST_CSD));
+	HXR_TEST_INT_EQ(3, HXR_CSD_GET_DIGIT00(HXR_TEST_CSD));
+#undef HXR_TEST_CSD
 
 	printf(" passed.\n");
 	return 0;
